@@ -1,0 +1,99 @@
+﻿@model mySite.Models.Search.SearchResultModel
+
+
+<div class="container">
+    <div class="row">
+        <div class="">
+            <span> 검색단어  : @Model.SearchQuery </span>
+
+            <form asp-action="Search" asp-controller="Search" method="post">
+                <div class="">
+                    <input asp-for="@Model.SearchQuery" type="text" placeholder="검색단어" />
+                    <button type="button" class="btn btn-primary">
+                        <i class=""> 검색 </i>
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <div class="row">
+        @if (!Model.EmptySearchResults)
+        {
+            <table class="table table-hover table-bordered">
+                <tbody>
+                    @foreach (var post in Model.Posts)
+                    {
+                        <tr>
+                            <td>
+                                <div style="background-image:url()"></div>
+                                <div class="">
+                                    <div class="">
+                                        <a asp-action="Detail" asp-controller="Post" asp-route-postId="@post.Id">
+                                            @post.Title
+                                        </a>
+                                    </div>
+                                    <div class="">
+                                        <div>
+                                            by:
+                                            <span class="">
+                                                <a asp-action="Detail" asp-controller="Profile" asp-route-profileId="@post.AuthorId">
+                                                    @post.AuthorName
+                                                </a>
+                                            </span>
+                                            on:
+                                            <span class="">
+                                                @post.DatePosted
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="">
+                                    Replies : @post.Comments?.Count() 0
+                                </div>
+                            </td>
+                            <td>
+                                <div class="">
+                                    @post.DatePosted
+                                </div>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="">
+                <h3> @Model.SearchQuery 에 대한 아무것도 찾지 못하였습니다. </h3>
+            </div>
+        }
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

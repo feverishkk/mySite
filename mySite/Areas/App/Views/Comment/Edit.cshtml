@@ -1,0 +1,40 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model mySite.Models.PostComment.NewCommentModel
+
+<h1 class="container"> 댓글 수정 </h1>
+
+<div class="container">
+    <div class="row">
+
+        <form method="post" asp-action="Edit" asp-controller="Comment" asp-area="App" asp-route-commentId="@Model.Id">
+
+            @if (User.IsInRole("Admin"))
+            {
+                <strong> Admin 님께서는 @Model.AuthorName 님의 댓글을 수정 중입니다.  </strong>
+            }
+            else
+            {
+                <strong> @Model.AuthorName 님께서는 댓글을 수정 중입니다. </strong>
+            }
+
+            <div class="form-group">
+                <label asp-for="Content"> 댓글 </label>
+                <textarea id="newCommentContent" asp-for="Content" rows="10" class="form-control"></textarea>
+                <span asp-validation-for="Content" class="text-danger" hidden></span>
+            </div>
+
+
+            <button type="submit" asp-action="Edit" asp-controller="Comment" asp-route-commentId="@Model.Id"
+                    class="btn btn-success">
+                수정
+            </button>
+
+            <a class="btn btn-info" asp-action="Index" onClick="history.go(-1); return false;">
+                취소
+            </a>
+
+        </form>
+
+
+    </div>
+</div>

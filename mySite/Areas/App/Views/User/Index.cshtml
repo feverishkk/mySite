@@ -1,0 +1,89 @@
+﻿@model IEnumerable<mySite.Data.Models.ApplicationUser>
+
+<br />
+
+
+<div class="row">
+
+    <div class="col-6">
+        <h2 class="text-primary"> User List </h2>
+    </div>
+
+</div>
+
+
+<div class="p-4 border rounded">
+    @if (Model.Count() > 0)
+    {
+        <table class="table table-striped border">
+            <tr class="table-secondary">
+                <th>
+                    이메일
+                </th>
+                <th>
+                    유저 이름
+                </th>
+                <th>
+                    역할
+                </th>
+                <th class="text-center">
+                    권한 설정
+                </th>
+                <th></th>
+            </tr>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.Email
+                    </td>
+
+                    <td>
+                        @item.NickName
+                    </td>
+
+                    <td>
+                        @item.Role
+                    </td>
+
+                    <td>
+                        <div class="text-center">
+
+                            <form asp-action="Delete" asp-route-userId="@item.Id">
+                                <a asp-action="Edit" asp-route-userId="@item.Id" class=" btn btn-info text-white" style="cursor:pointer">
+                                    수정
+                                </a>
+
+                                <a asp-action="ManageUserClaims" asp-route-userId="@item.Id" class="btn btn-primary text-white"
+                                   style="cursor:pointer">Claim</a>
+
+                                @if (item.LockoutEnd == null || item.LockoutEnd < DateTime.Now)
+                                {
+                                    <button asp-action="LockUnlock" asp-route-userId="@item.Id" class="btn btn-success text-white"
+                                            style="cursor:pointer">
+                                        <span>&nbsp; 잠금 &nbsp; </span>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button asp-action="LockUnlock" asp-route-userId="@item.Id" class="btn btn-danger text-white"
+                                            style="cursor:pointer">
+                                        <span> &nbsp; 잠금풀기 &nbsp; </span>
+                                    </button>
+                                }
+
+                                <button type="submit" onclick="return confirm('정말로 삭제하시겠습니까?!')"
+                                        class=" btn btn-danger">
+                                    삭제
+                                </button>
+
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+</div>
+
+

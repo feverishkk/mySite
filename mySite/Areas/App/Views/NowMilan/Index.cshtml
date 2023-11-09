@@ -1,0 +1,725 @@
+﻿@*@model mySite.Models.Milan.footballManagerRoot*@
+@*@model mySite.Models.Milan.NextMatchRoot*@
+@*@model mySite.Models.Milan.footballPlayerRoot*@
+@*@model mySite.Models.Milan.NextMatchModel*@
+
+@model mySite.Models.Milan.NowMilanViewModel
+
+<hr />
+
+@{
+    // 아래는 메인카드에서 사용하기 위한 전역변수
+    var milanInfo = Model.milanInfo.Result.milanData;
+}
+
+@*메인카드*@
+<div class="container">
+    <div class="row">
+        <div class="card" style="width:1300px">
+            <div class="card-body">
+                <div class="float-left">
+                    <div class="d-flex flex-row text-center">
+                        <img src="@milanInfo.Logo" style="width:100px;height:100px" /> &nbsp; &nbsp;
+                        <h2 class="mt-3">
+                            AC MILAN <br />
+                            <small> @milanInfo.Country (@milanInfo.CountryCode) </small>
+                        </h2>
+                    </div>
+                    <br />
+
+                    <div class="container text-center">
+                        <div class="d-flex flex-row">
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+
+
+<div class="container">
+    <div class="row">
+        <div class="d-flex">
+
+            @*선수들*@
+            <div class="card " style="width:600px;">
+                <div class="container">
+
+                    <div class="card-body">
+                        <div class="float-left">
+                            <h4>플레이어 로스트</h4>
+                        </div>
+                        <br /> <br /> <br />
+                        @{
+                            // 팀 명수
+                            int players = Model.footballPlayer.Result.Players.Count();
+                            float ageTotal = 0;
+                            float averageAge = 0;
+                            int teamCost = 0;
+                            float averageCost = 0;
+                            float overallPlayerRating = 0;
+                            float overallSum = 0;
+                            int noValuePlayer = 0;
+                            int noRatedPlayer = 0;
+                            var OPR = 0; // Overall Players Rating
+
+                            @foreach (var item in Model.footballPlayer.Result.Players)
+                            {
+
+                                // 팀 평균 나이
+                                ageTotal = (ageTotal + item.Age);
+                                averageAge = (float)(ageTotal / players);
+
+                                // 팀 전체 몸값
+                                teamCost += item.MarketValue.GetValueOrDefault();
+
+                                // 선수들 평균 몸값
+                                @if (item.MarketValue.HasValue)
+                                {
+                                    noValuePlayer++; // 5명이 아직 몸값이 기재되어 있지 않음.
+                                }
+                                averageCost = teamCost / noValuePlayer;
+
+
+                                // 선수들 평균 평점계산
+                                overallSum = overallSum + (float)item.Rating.GetValueOrDefault(); // 선수들 전체 평점
+
+                                @if (!item.Rating.HasValue)
+                                {
+                                    noRatedPlayer++; // 3명이 아직 평점이 기재되어 있지 않음.
+                                }
+                                //25    28          3
+                                OPR = players - noRatedPlayer;
+
+                                //    답                        1519      /   25
+                                overallPlayerRating = (float)(overallSum / OPR);
+                            }
+                        }
+
+                        <div class="text-center ">
+                            <div class="d-flex flex-row justify-content-center">
+
+                                <h5>
+                                    @players 명 <br />
+                                    <small> Total Players </small>
+                                </h5>
+                                &nbsp; &nbsp; &nbsp;
+
+                                <h5>
+                                    @String.Format("{0:0.00}", averageAge)살 <br />
+                                    <small> Average Age </small>
+                                </h5>
+                                &nbsp; &nbsp; &nbsp;
+
+                                <h5>
+                                    @teamCost.ToString().Substring(0, 3)M+€<br />
+                                    <small> Team cost </small>
+                                </h5>
+                                &nbsp; &nbsp; &nbsp;
+
+                                <h5>
+                                    @averageCost.ToString().Substring(0, 2)M+€ <br />
+                                    <small>Average Cost</small>
+                                </h5>
+
+                            </div>
+
+                            <br /> <br />
+
+                            <h5>
+
+                                평균 : @Html.DisplayFor(modelItem => overallPlayerRating) 점<br />
+                                <small>Overall Player Rating</small>
+                            </h5>
+
+                        </div>
+
+
+                    </div>
+
+                    <div class="card-body">
+                        <div class="float-left">
+                            <h5>골키퍼</h5>
+                            <hr />
+                            <table class="table table-sm">
+                                <thead class="text-center">
+                                    <tr>
+                                        <th> # </th>
+                                        <th> Player </th>
+                                        <th> Country </th>
+                                        <th> Pos </th>
+                                        <th> Age </th>
+                                        <th> € </th>
+                                        <th> Rating </th>
+                                    </tr>
+                                </thead>
+                                @foreach (var item in Model.footballPlayer.Result.Players)
+                                {
+                                    <tbody>
+                                        @{
+
+                                            float m = 9999999.99F;
+                                            float tm = 99999999.99F;
+
+                                            var goalKeeper = item.PositionName.Contains("Goalkeeper"); // 골키퍼
+
+                                        }
+                                        <tr class="text-center">
+                                            @if (goalKeeper == true)
+                                            {
+                                                <td>@item.ShirtNumber</td>
+                                                <td class="float-left" id="milanPlayerImg">
+                                                    <img src="@item.Photo" style="width:30px; height:30px">
+                                                    @item.Name
+                                                </td>
+                                                <td>@item.NationalityCode</td>
+                                                <td>@item.Position</td>
+                                                <td>@item.Age</td>
+
+                                                @if (item.MarketValue < m) // 백만유로 대 선수들
+                                                {
+                                                    <td>@item.MarketValue.ToString().Substring(0, 1)K+</td>
+                                                }
+
+                                                @if ((item.MarketValue > m) && item.MarketValue < tm) // 천만유로 대 선수들
+                                                {
+                                                    <td>@item.MarketValue.ToString().Substring(0, 2)M+</td>
+                                                }
+                                                @if (!item.MarketValue.HasValue)
+                                                {
+                                                    <td></td>
+                                                }
+                                                <th>@item.Rating</th>
+                                            }
+                                        </tr>
+                                    </tbody>
+                                }
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <div class="card-body">
+                        <div class="float-left">
+                            <h5>수비수</h5>
+                            <hr />
+                            <table class="table table-sm">
+                                <thead class="text-center">
+                                    <tr>
+                                        <th> # </th>
+                                        <th> Player </th>
+                                        <th> Country </th>
+                                        <th> Pos </th>
+                                        <th> Age </th>
+                                        <th> € </th>
+                                        <th> Rating </th>
+                                    </tr>
+                                </thead>
+                                @foreach (var item in Model.footballPlayer.Result.Players)
+                                {
+                                    <tbody>
+                                        @{
+
+                                            float m = 9999999.99F;
+                                            float tm = 99999999.99F;
+
+                                            var defender = item.PositionName.Contains("Defender"); // 수비수
+
+                                        }
+                                        <tr class="text-center">
+                                            @if (defender == true)
+                                            {
+                                                <td>@item.ShirtNumber</td>
+                                                <td class="float-left" id="milanPlayerImg">
+                                                    <img src="@item.Photo" style="width:30px; height:30px">
+                                                    @item.Name
+                                                </td>
+                                                <td>@item.NationalityCode</td>
+                                                <td>@item.Position</td>
+                                                <td>@item.Age</td>
+
+                                                @if (item.MarketValue < m) // 백만유로 대 선수들
+                                                {
+                                                    <td>@item.MarketValue.ToString().Substring(0, 1)K+</td>
+                                                }
+
+                                                @if ((item.MarketValue > m) && item.MarketValue < tm) // 천만유로 대 선수들
+                                                {
+                                                    <td>@item.MarketValue.ToString().Substring(0, 2)M+</td>
+                                                }
+                                                @if (!item.MarketValue.HasValue)
+                                                {
+                                                    <td></td>
+                                                }
+                                                <th>@item.Rating</th>
+                                            }
+                                        </tr>
+                                    </tbody>
+                                }
+                            </table>
+
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="float-left">
+                            <h5>미드필더</h5>
+                            <hr />
+                            <table class="table table-sm">
+                                <thead class="text-center">
+                                    <tr>
+                                        <th> # </th>
+                                        <th> Player </th>
+                                        <th> Country </th>
+                                        <th> Pos </th>
+                                        <th> Age </th>
+                                        <th> € </th>
+                                        <th> Rating </th>
+                                    </tr>
+                                </thead>
+                                @foreach (var item in Model.footballPlayer.Result.Players)
+                                {
+                                    <tbody>
+                                        @{
+
+                                            float m = 9999999.99F;
+                                            float tm = 99999999.99F;
+
+                                            var midfielder = item.PositionName.Contains("Midfielder"); // 미드필더
+
+                                        }
+                                        <tr class="text-center">
+                                            @if (midfielder == true)
+                                            {
+                                                <td>@item.ShirtNumber</td>
+                                                <td class="float-left" id="milanPlayerImg">
+                                                    <img src="@item.Photo" style="width:30px; height:30px">
+                                                    @item.Name
+                                                </td>
+                                                <td>@item.NationalityCode</td>
+                                                <td>@item.Position</td>
+                                                <td>@item.Age</td>
+
+                                                @if (item.MarketValue < m) // 백만유로 대 선수들
+                                                {
+                                                    <td>@item.MarketValue.ToString().Substring(0, 1)K+</td>
+                                                }
+
+                                                @if ((item.MarketValue > m) && item.MarketValue < tm) // 천만유로 대 선수들
+                                                {
+                                                    <td>@item.MarketValue.ToString().Substring(0, 2)M+</td>
+                                                }
+                                                @if (!item.MarketValue.HasValue)
+                                                {
+                                                    <td></td>
+                                                }
+                                                <th>@item.Rating</th>
+                                            }
+                                        </tr>
+                                    </tbody>
+                                }
+                            </table>
+
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="float-left">
+                            <h5>공격수</h5>
+                            <hr />
+                            <table class="table table-sm">
+                                <thead class="text-center">
+                                    <tr>
+                                        <th> # </th>
+                                        <th> Player </th>
+                                        <th> Country </th>
+                                        <th> Pos </th>
+                                        <th> Age </th>
+                                        <th> € </th>
+                                        <th> Rating </th>
+                                    </tr>
+                                </thead>
+                                @foreach (var item in Model.footballPlayer.Result.Players)
+                                {
+                                    <tbody>
+                                        @{
+                                            float m = 9999999.99F;
+                                            float tm = 99999999.99F;
+
+                                            var forward = item.PositionName.Contains("Forward"); // 공격수
+
+                                        }
+                                        <tr class="text-center">
+                                            @if (forward == true)
+                                            {
+                                                <td>@item.ShirtNumber</td>
+                                                <td class="float-left" id="milanPlayerImg">
+                                                    <img src="@item.Photo" style="width:30px; height:30px">
+                                                    @item.Name
+                                                </td>
+                                                <td>@item.NationalityCode</td>
+                                                <td>@item.Position</td>
+                                                <td>@item.Age</td>
+
+                                                @if (item.MarketValue < m) // 백만유로 대 선수들
+                                                {
+                                                    <td>@item.MarketValue.ToString().Substring(0, 1)K+</td>
+                                                }
+
+                                                @if ((item.MarketValue > m) && item.MarketValue < tm) // 천만유로 대 선수들
+                                                {
+                                                    <td>@item.MarketValue.ToString().Substring(0, 2)M+</td>
+                                                }
+                                                @if (!item.MarketValue.HasValue)
+                                                {
+                                                    <td></td>
+                                                }
+                                                <th>@item.Rating</th>
+                                            }
+                                        </tr>
+                                    </tbody>
+                                }
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            &nbsp;&nbsp;&nbsp;
+
+
+            @*감독*@
+            <div class="card" style="width:520px; height:550px;">
+                <div class="container">
+                    <div class="row">
+                        @foreach (var item in Model.footballManager.Result.Manager)
+                        {
+
+                            <div class="card-body text-center">
+
+                                <h2 class="card-title float-left">Coach</h2> <br /> <br /> <br />
+
+                                <img id="milanImg"
+                                     src="@Html.DisplayFor(modelItem=>item.Photo)" style="width:100px;height:100px" />
+
+                                <div class="justify-content-center">
+
+                                    <h3> @Html.DisplayFor(modelItem => item.Name) </h3>
+                                    <br />
+
+                                    <h5>
+                                        @Html.DisplayFor(modelItem => item.NationalityCode)
+                                        <img id="NationalityFlagImg" src="https://cdn.countryflags.com/thumbs/italy/flag-round-250.png" style="width:33px;height:33px" />
+                                        <br />
+                                        <span>Nationality</span>
+                                    </h5>
+                                    <br />
+
+                                    <h5>
+                                        @Html.DisplayFor(modelItem => item.PreferredFormation) <br />
+                                        <span>Preferred Formation</span>
+                                    </h5>
+
+                                    <br />
+                                    <br />
+                                </div>
+                            </div>
+
+                            <div class="container text-center">
+                                <div class="d-flex flex-row">
+                                    @{
+                                        var total = item.Performance.Total;
+                                        var win = item.Performance.Wins;
+                                        var draw = item.Performance.Draws;
+                                        var loss = item.Performance.Losses;
+                                        var winPercent = Math.Round(((double)win / total) * 100);
+                                        var drawPercent = Math.Round(((double)draw / total) * 100);
+                                        var lossPercent = Math.Round(((double)loss / total) * 100);
+                                    }
+                                    <h5>
+                                        @total <br />
+                                        <small>Total Games </small>
+                                    </h5>
+                                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                    <h5>
+                                        @win <br />
+                                        <small> Wins (@winPercent%) </small>
+                                    </h5>
+                                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                    <h5>
+                                        @draw <br />
+                                        <small>Draws (@drawPercent%)</small>
+                                    </h5>
+                                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                    <h5>
+                                        @loss <br />
+                                        <small>Losses (@lossPercent%) </small>
+                                    </h5>
+                                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                    <h5>
+                                        @Html.DisplayFor(modelItem => item.Performance.TotalPoints) <br />
+                                        <small>Points Scored</small>
+                                    </h5>
+
+                                </div>
+                            </div>
+
+                        }
+                    </div>
+                </div>
+
+                <br />
+                @*경기목록*@
+                <div class="container row">
+                    <div class="card" style="width:550px;">
+                        <div class="card-body ">
+                            <div class="float-left">
+                                <div class="d-flex flex-row text-center">
+
+                                    <h2>Events </h2> <hr /> <br />
+
+                                    <hr />
+                                </div>
+
+                                <table class="table">
+
+                                    @foreach (var item in Model.matchEvents.Result.matchEvents)
+                                    {
+                                        <thead>
+                                            <tr>
+                                                @if (item.League.Slug.Contains("italy-coppa-italia"))
+                                                {
+                                                    <th> <img src="@item.League.Logo" style="width:20px;height:20px" /> Coppa Italia </th>
+                                                }
+                                                @if (item.League.Slug.Contains("europe-uefa-champions-league"))
+                                                {
+                                                    <th> <img src="@item.League.Logo" style="width:20px;height:20px" /> Champions League </th>
+                                                }
+                                                @if (item.League.Slug.Contains("world-club-friendly-games"))
+                                                {
+                                                    <th> <img src="@item.League.Logo" style="width:20px;height:20px" /> Friendly Games </th>
+                                                }
+                                                @if (item.League.Slug.Contains("italy-serie-a"))
+                                                {
+                                                    <th> <img src="@item.League.Logo" style="width:20px;height:20px" /> Serie A </th>
+                                                }
+                                            </tr>
+                                        </thead>
+
+
+                                        <tbody>
+                                            @{
+                                                DateTime dateNow = DateTime.Today; // 현재 날짜
+                                                DateTime SeasonEnd = new DateTime(2022, 5, 22, 23, 59, 59); // 시즌 종료
+                                                DateTime SeasonStart = new DateTime(2021, 8, 22, 12, 1, 1); // 시즌 시작
+
+                                                // startAt이라는 item이 string으로 되어 있음 (string타입과 DateTime타입은 비교할 수 없다.)
+                                                // 그래서 string타입의 날짜를 DateTime타입으로 변환
+                                                // 이유: 과거전적을 알아내기 위해서 바꿈.
+                                                DateTime startAt = DateTime.ParseExact(item.StartAt,
+                                                                                       "yyyy-MM-dd HH:mm:ss",
+                                                                                       System.Globalization.CultureInfo.InvariantCulture);
+
+                                                var result = DateTime.Compare(dateNow, SeasonEnd);
+
+                                            }
+                                            <tr>
+                                                <td>
+                                                    @item.StartAt &nbsp; &nbsp;
+                                                    <img src="@item.HomeTeam.Logo" style="width:30px;height:30px" /> vs
+                                                    <img src="@item.AwayTeam.Logo" style="width:30px;height:30px" /> &nbsp; &nbsp; | &nbsp; &nbsp;
+
+                                                    @if (startAt < dateNow)
+                                                    {
+
+                                                        <strong> @item.HomeScore.Display : @item.AwayScore.Display </strong>
+                                                    }
+                                                    else
+                                                    {
+                                                        <strong> &nbsp; &nbsp; - </strong>
+                                                    }
+
+
+                                                </td>
+
+                                            </tr>
+                                        </tbody>
+                                    }
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+        <br />
+
+        @*위치*@
+        <div class="container row float-left mt-3">
+            <div class="card" style="width:600px;">
+                <div class="card-body">
+                    <h2 class="card-title float-left">Location</h2> <br /> <br /> <br />
+
+                    <div class="d-flex flex-row text-center justify-content-center">
+
+                        <strong>
+                            @milanInfo.Venue.CountryFlag <br />
+                            <small>Country</small>
+                        </strong>
+                        &nbsp; &nbsp; &nbsp;
+
+                        <strong>
+                            @milanInfo.Venue.City.En <br />
+                            <small>Country</small>
+                        </strong>
+                        &nbsp; &nbsp; &nbsp;&nbsp;
+
+                        <strong>
+                            @milanInfo.Venue.Stadium.En <br />
+                            &nbsp; &nbsp; &nbsp;
+                            <small>Stadium Name</small>
+                        </strong>
+                        &nbsp; &nbsp; &nbsp;&nbsp;
+
+                        <strong>
+                            @milanInfo.Venue.StadiumCapacity <br />
+                            <small>Capacity</small>
+                        </strong>
+                        &nbsp; &nbsp; &nbsp;
+                        <br /> <br />
+                    </div>
+
+
+                </div>
+            </div>
+
+            @*어바웃*@
+            <div class="container mt-3">
+                <div class="row">
+                    <div class="card" style="width:600px;">
+                        <div class="card-body">
+                            <div class="float-left">
+                                <h2 class="card-title float-left">AC밀란에 대하여..</h2> <br /> <br /> <br />
+
+                                <p>
+                                    이탈리아 세리에 A의 프로 축구 클럽. 연고지는 밀라노. 홈 구장은 산 시로.
+
+                                    이탈리아 클럽 중 UEFA 챔피언스 리그 최다 우승팀이자
+                                    유럽에서 두 번째로 많은 우승을 차지한 클럽으로,
+                                    화려한 역사를 자랑하는 유럽 굴지의 명문 구단이었지만
+                                    현재는 과거의 위상을 잃어버린 클럽이기도 하다.
+                                </p>
+                                <p>
+                                    풀네임은 Associazione Calcio Milan이며 이것을 줄여서
+                                    A.C. 밀란이라고 부르거나 더 단순하게는 밀란으로 부르기도 한다.
+                                    같은 뿌리에서 갈라져 나온 '인테르나치오날레 밀라노'는
+                                    '인테르' 또는 '인터 밀란'이라고 부른다.
+                                    밀란과 인테르는 밀라노 더비를 펼친다. 동일한 경기장도
+                                    밀란은 산시로로 부르지만 인테르는 스타디오 주세페 메아차로 부른다.
+                                </p>
+                                <p>
+                                    세리에 A 우승 기록이 10회 이상인 3구단 중의 하나로 유니폼의
+                                    팀 엠블럼 위에 10회 우승시 마다 추가되는 별이 박혀있다.
+                                    다른 두 팀은 라이벌인 인테르와 유벤투스.
+                                </p>
+                                <p>
+                                    2013-14 시즌까지 아르헨티나의 CA 보카 주니어스,
+                                    레알 마드리드 CF와 함께 UEFA와 FIFA가 주최한
+                                    국제 경기에서 가장 많은 우승 횟수를 기록한 팀이었다.
+                                    또한 챔피언스 리그 7회 우승으로 레알 마드리드 CF에 이어
+                                    두 번째로 많은 우승 횟수를 기록하고 있다.
+                                    그 뿐만 아니라 UEFA 슈퍼컵에서 5회 우승,
+                                    UEFA 컵 위너스컵에서 2회 우승한 경력도 갖고 있다.
+                                </p>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <br />
+
+
+
+
+    <br /> <br />
+
+
+</div>
+
+
+
+
+
+<br />
+
+
+
+
+
+
+
+
+
+@*<div class="row ">
+
+        <div class="card m-1" style="width:700px;">
+            <div class="card-body text-center">
+                <table class="table">
+
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Teams</th>
+                            <th>Matches</th>
+                            <th>Wins</th>
+                            <th>Draws</th>
+                            <th>Losses</th>
+                            <th>Goals</th>
+                            <th>PTS</th>
+                        </tr>
+                    </thead>
+
+                    @foreach (var item in Model.leagueStanding.Result.LeagueStanding.Total)
+                    {
+                        <tbody>
+                            <tr class="table-success">
+                                <th scope="row"> @Html.DisplayFor(modelItem => item.StandingPlace)</th>
+                                <td>@Html.DisplayFor(modelItem => item.StandingTeam)</td>
+                                <td>@Html.DisplayFor(modelItem => item.StandingP)</td>
+                                <td>@Html.DisplayFor(modelItem => item.StandingW)</td>
+                                <td>@Html.DisplayFor(modelItem => item.StandingD)</td>
+                                <td>@Html.DisplayFor(modelItem => item.StandingL)</td>
+                                <td>@Html.DisplayFor(modelItem => item.StandingF) | @Html.DisplayFor(modelItem => item.StandingA)</td>
+                                <td>@Html.DisplayFor(modelItem => item.StandingPTS)</td>
+                            </tr>
+                        </tbody>
+                    }
+                </table>
+
+            </div>
+        </div>
+
+    </div>*@
+
+<hr />

@@ -1,0 +1,18 @@
+﻿
+
+
+
+이 클래스 라이브러리는
+
+1. 일반 모델들을 정의하고 있다. (뷰 모델은 mySite에서)
+
+2. Interface파일들을 정의하고 있다.
+
+3. ApplicationDbContext를 이용하여 DB와 연동하고 있다.
+
+DB는 MS SQL Server Management.
+
+
+
+
+

@@ -1,0 +1,77 @@
+﻿@model mySite.Models.Post.NewPostModel
+
+
+<h1 class="container"> 게시물 수정</h1>
+
+<div class="container">
+    <div class="row">
+
+        <form asp-action="Edit" asp-controller="Post" asp-area="App" method="post">
+            @if (User.IsInRole("Admin"))
+            {
+                <strong> Admin 님께서는 @Model.AuthorName 님의 글을 수정 중입니다.  </strong>
+            }
+            else
+            {
+                <strong> @Model.AuthorName 님께서는 Free게시판에서 수정 중입니다. </strong>
+            }
+
+
+            <div class="form-group mt-3">
+                <label asp-for="Title"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
+                <label asp-for="Content"></label>
+                <textarea asp-for="Content" rows="15" class="form-control summernote"></textarea>
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+
+
+            <button type="submit" asp-action="Edit" asp-controller="Post" asp-route-postId="@Model.Id"
+                    class="btn btn-success">
+                수정하기
+            </button>
+
+            <a asp-action="Detail" asp-controller="Post" asp-route-postId="@Model.Id" class="btn btn-warning">
+                뒤로가기
+            </a>
+
+        </form>
+
+
+    </div>
+</div>
+
+
+
+
+@section Scripts{
+
+    <script>
+        $(document).ready(function () {
+            $('.summernote').summernote({
+                height: 300,
+                focus: true,
+                lang: "ko-KR",
+                disableDragAndDrop: false,
+
+
+                //XSS protection
+                codeviewFilter: false,
+                codeviewIframeFilter: true,
+
+
+                fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', '굴림'],
+                lineHeights: ['0.2', '0.3', '0.4', '0.5', '0.6', '0.8', '1.0', '1.2', '1.4', '1.5', '2.0', '3.0']
+
+            });
+        });
+
+
+    </script>
+
+}

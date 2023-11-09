@@ -1,0 +1,10 @@
+﻿
+
+
+mySite.Data에 있는 Interface파일들(IApplicationUser, IFrontPage, IPost, IUpload)을
+
+
+여기 ~~Service파일에서 상속받아 구현하는 클래스 라이브러리.
+
+
+

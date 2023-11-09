@@ -1,0 +1,180 @@
+﻿
+@using Microsoft.AspNetCore.Identity
+
+@inject UserManager<IdentityUser> UserManager
+@inject SignInManager<IdentityUser> SignInManager
+
+@model mySite.Models.Post.PostIndexModel
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-10">
+            <div class="panel panel-default">
+
+                <div class="panel-heading mt-4">
+                    <strong> 제목: @Model.Title </strong>
+                </div>
+
+                <div class="mt-3">
+                    <strong>
+                        글쓴이:
+                        <a asp-action="Detail" asp-controller="Profile" asp-route-profileId="@Model.AuthorId">
+                            @Model.AuthorName
+                        </a>
+                    </strong>
+
+                    <strong class="float-lg-right">날짜: @Model.Created </strong>
+
+                </div>
+
+                <hr />
+
+                <div class="float-right">
+                    <button type="submit" class="btn btn-primary" id="nextFont">
+                        Font
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="larger">
+                        FontSize↑
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="smaller">
+                        FontSize↓
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="bold">
+                        Bold
+                    </button>
+                </div>
+
+                <div class="col-3 mt-3" id="postContent">
+
+                    @Html.Raw(Model.PostContent)
+
+                </div>
+
+
+
+                <br />
+                <hr />
+
+
+                <div class="row"> </div>
+
+
+
+                @if (Model.Comments.Any())
+                {
+                    foreach (var comment in Model.Comments)
+                    {
+                        <div class="row">
+                            <div class="mt-2 col-md-3">
+
+                                <div style="background-image:url();"></div>
+
+                                <a asp-action="Detail" asp-controller="Profile" asp-route-profileId="@comment.AuthorId">
+                                    @comment.AuthorName
+                                </a>
+
+                                @if (comment.IsAuthorAdmin)
+                                {
+                                    <div class="isAdmin"> Admin </div> <br />
+                                }
+
+                                <span> @comment.Created </span>
+
+                            </div>
+
+
+
+                            <div class="mt-2 col-md-9">
+
+                                <div>
+                                    @Html.Raw(comment.CommentContent)
+
+                                </div>
+
+                                <div class=" float-right">
+
+                                    @*댓글에 대한 수정삭제 버튼*@
+                                    @if ((UserManager.GetUserId(User) == comment.AuthorId.ToString()))
+                                    {
+
+                                        <div class=" float-right">
+
+                                            <a class="btn btn-warning" asp-action="Edit" asp-controller="Comment" asp-route-commentId="@comment.Id">
+                                                수정
+                                            </a>
+
+                                            <a class="btn btn-danger" asp-action="Delete" asp-controller="Comment" asp-route-commentId="@comment.Id">
+                                                삭제
+                                            </a>
+
+                                        </div>
+                                    }
+                                </div>
+
+
+
+                            </div>
+
+
+
+                        </div>
+                    }
+                }
+
+                else
+                {
+                    <h4 class="text-center"> 댓글이 없습니다! 첫번째 댓글을 달아주세요 :) </h4>
+                }
+
+                <hr />
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <form asp-action="Create" asp-controller="Comment" asp-area="App" asp-route-commentId="@Model.Id" method="post">
+                        <div class="form-group">
+                            <label> 댓글 </label>
+                            <textarea id="commentCreate" name="commentCreate" rows="5" class="form-control" runat="server"> </textarea>
+                        </div>
+
+
+                        <div class="row">
+                            <span>
+                                <button type="submit" asp-action="Create" asp-controller="Comment" asp-route-commentId="@Model.Id" class="btn btn-primary">
+                                    댓글 달기
+                                </button>
+                            </span>
+                        </div>
+                    </form>
+                }
+
+                <hr />
+
+                <a class="btn btn-info" asp-action="Index" onClick="history.go(-1); return false;"> 뒤로가기 </a>
+
+                @*포스팅에 대한 수정&삭제버튼 그리고 글쓴이 이거나 Admin인 유저라면 수정&삭제 가능*@
+                @if ((UserManager.GetUserId(User) == Model.AuthorId) || User.IsInRole("Admin"))
+                {
+                    <div class="float-lg-right">
+                        <a asp-action="Edit" asp-controller="Post" asp-route-postId="@Model.Id" class="btn btn-warning">
+                            수정하기
+                        </a>
+
+                        <a asp-action="Delete" asp-controller="Post" asp-route-postId="@Model.Id" class="btn btn-danger">
+                            삭제하기
+                        </a>
+                    </div>
+                }
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts{
+
+
+    <script src="~/js/BoldFontSize.js"></script>
+}

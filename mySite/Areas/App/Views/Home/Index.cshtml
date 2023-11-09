@@ -1,0 +1,286 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
+@inject SignInManager<IdentityUser> SignInManager
+@model mySite.Models.Home.HomeIndexModel
+
+<div class="container-fluid">
+    &nbsp;
+    <div class="row">
+
+        <div class="col-2 order-2 float-left">
+            @*<div class="col-2 float-left" id="sticky-sidebar">*@
+            <div class="sticky-top h-100">
+
+                <div class="card" style="height:90px; width:200px">
+                    <div class="card-body">
+                        <p class="text-center"> 이미지를 누르면  </p>
+                        <p class="text-center"> 이동합니다. </p>
+                    </div>
+                </div>
+                &nbsp;
+
+                <div class="card" style="height: 100px; width: 200px">
+                    <img src="~/images/official.png" class="img-fluid" align="middle" onclick="window.open('https://www.acmilan.com/en', '_blank');">
+                    <div class="card-body">
+                        <h6 class="card-title text-center"> AC밀란 공식사이트 </h6>
+                    </div>
+                </div>
+                &nbsp;
+
+                <div class="card" style="height: 100px; width: 200px">
+                    <img src="~/images/facebook_Milan.PNG" class="img-fluid" align="middle" onclick="window.open('https://www.facebook.com/acmilan.korea/', '_blank');">
+                    <div class="card-body">
+                        <h6 class="card-title text-center"> Facebook Milan </h6>
+                    </div>
+                </div>
+                &nbsp;
+
+                <div class="card" style="height: 100px; width: 200px">
+                    <img src="~/images/cloud_Milan.PNG" class="img-fluid" align="middle" onclick="window.open('https://drive.google.com/drive/folders/1tU34YxGvfL1wAb5sgTNerpPKsx2zI2MZ', '_blank');">
+                    <div class="card-body">
+                        <h6 class="card-title text-center"> Milan's Cloud </h6>
+                    </div>
+                </div>
+                &nbsp;
+
+                <div class="card" style="height: 100px; width: 200px">
+                    <img src="~/images/case.PNG" class="img-fluid" align="middle" onclick="window.open('http://acmilanista.net/xe/freeboard/1863209', '_blank');">
+                    <div class="card-body">
+                        <h6 class="card-title text-center"> I'm Case </h6>
+                    </div>
+                </div>
+                &nbsp;
+
+                <div class="card" style="height: 100px; width: 200px">
+                    <img src="~/images/TodayFootball.png" class="img-fluid" align="middle" onclick="window.open('https://pf.kakao.com/_PmBRE/1710541', '_blank');">
+                    <div class="card-body">
+                        <h6 class="card-title text-center"> 오늘의 축구 </h6>
+                    </div>
+                </div>
+                &nbsp;
+
+                @*<div class="card" style="height: 100px; width: 200px">
+                        <a asp-action="Contact" asp-controller="Contact" asp-area="App">
+                            <img src="~/images/message.jpg" class="img-fluid" align="middle">
+                        </a>
+                        <div class="card-body">
+                            <p class="card-title text-center"> 운영자에게 메세지 </p>
+                        </div>
+                    </div>
+                    &nbsp;*@
+
+            </div>
+
+        </div>
+
+        <div class="col-7 order-3 float-md-none">
+            <img class="jumbotron" src='/images/jumbotron.PNG' style="width:830px; background-color:white" />
+
+            <div>
+                <marquee><p style="font-family: Impact; font-size: 18pt"> 새해 복 많이 받으세요. </p></marquee>
+            </div>
+
+            @foreach (var post in Model.LatestPosts)
+            {
+
+                <div class="text-center">
+                    <h3> 최신글 </h3>
+                </div>
+
+                <div class="card-deck">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title"> 공지사항 </h4>
+                            <p class="card-text"> Not Yet! </p>
+                        </div>
+                    </div>
+
+                    @*LatestPosts - Calcio*@
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title"> Free </h4>
+                            <hr />
+                            <h5> <a asp-action="Detail" asp-controller="Post" asp-route-postId="@post.Id"> @post.Title </a>  </h5>
+                            <hr />
+
+                            <div class="card-text">
+                                @Html.Raw(post.PostContent)
+                            </div>
+
+                            <hr />
+
+                            <p> @post.AuthorName |  @post.DatePosted </p>
+                        </div>
+                    </div>
+
+                    @*LatestPosts - Replies*@
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title"> Calcio </h4>
+                            <p class="card-text"> My Calcio </p>
+                        </div>
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+
+        @*if User Logged in*@
+        <div class="col-3 order-3 float-right">
+            <div class="card">
+                <div class="card-body">
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        @foreach (var userInfo in Model.Users)
+                        {
+                            <h4 class="card-title text-center"> My Profile </h4>
+                            <p class="card-text">
+                                닉네임:
+                                <a asp-action="Detail" asp-controller="Profile" asp-route-profileId="@UserManager.GetUserId(User)">
+                                    @userInfo.UserName
+                                </a>
+                            </p>
+                            <p class="card-text"> 포인트: @userInfo.UserPoints  </p>
+                            <p class="card-text"> 가입한 날: @userInfo.RegisteredDate </p>
+                            <p class="card-text"> 최근로그인: @userInfo.LastLoginDate </p>
+                        }
+                    }
+
+                    else
+                    {
+                        <h4 class="card-title text-center"> 로그인 해주세요 ! </h4>
+
+                    }
+                </div>
+            </div>
+
+            &nbsp;
+
+
+            @*Source from : https://www.scoreaxis.com/free-soccer-widgets/league-tables-widget/*@
+            <div id="scoreaxis-widget-74ee3" style="border-width:1px;border-color:rgba(0, 0, 0, 0.15);border-style:solid;border-radius:8px;padding:10px;background:rgb(255, 255, 255);width:100%" data-reactroot="">
+                <iframe id="Iframe" src="https://www.scoreaxis.com/widget/standings-widget/384?font=6&amp;widgetRows=1%2C1%2C1%2C1%2C1%2C1%2C0%2C0%2C1%2C1&amp;inst=74ee3" style="width:100%;border:none;transition:all 300ms ease"></iframe>
+                <script>
+                    window.addEventListener("DOMContentLoaded", event => {
+                        window.addEventListener("message", event => {
+                            if (event.data.appHeight && "74ee3" == event.data.inst) {
+                                let container = document.querySelector("#scoreaxis-widget-74ee3 iframe");
+                                container && (container.style.height = parseInt(event.data.appHeight) + "px")
+                            }
+                        }, !1)
+                    });</script>
+
+            </div>
+
+
+
+        </div>
+
+    </div>
+</div>
+
+<div class="container-fluid">
+    &nbsp;
+    <div class="row">
+        &nbsp;
+        <div class="card" style="height:auto; width: 4500px;">
+            &nbsp;
+            <div class="card-deck">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title"> 영상1 </h4>
+                        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title"> 영상2 </h4>
+                        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title"> 영상3 </h4>
+                        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                    </div>
+                </div>
+
+                @*LatestPosts - Calcio*@
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title"> 영상4 </h4>
+                        <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
+                    </div>
+                </div>
+
+                @*LatestPosts - Replies*@
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title"> 영상5 </h4>
+                        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
+                    </div>
+                </div>
+            </div>
+
+            &nbsp;
+            <div class="m-sm-2"></div>
+
+            <div class="card-deck">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title"> 영상1 </h4>
+                        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title"> 영상2 </h4>
+                        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title"> 영상3 </h4>
+                        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                    </div>
+                </div>
+
+                @*LatestPosts - Calcio*@
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title"> 영상4 </h4>
+                        <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
+                    </div>
+                </div>
+
+                @*LatestPosts - Replies*@
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title"> 영상5 </h4>
+                        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
+                    </div>
+                </div>
+            </div>
+            &nbsp;
+
+
+        </div>
+
+
+    </div>
+</div>
+
+
+@section Scripts{
+    <script>
+        // Render blocking JS:
+        if (localStorage.theme) document.documentElement.setAttribute("data-theme", localStorage.theme);
+    </script>
+}
+

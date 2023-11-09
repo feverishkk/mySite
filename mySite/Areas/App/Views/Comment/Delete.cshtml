@@ -1,0 +1,44 @@
+﻿@model mySite.Models.PostComment.DeleteCommentModel
+
+<h1 class="container"> 댓글 삭제 </h1>
+
+<div class="container">
+    <div class="row">
+
+        <form method="post" asp-action="Delete" asp-controller="Comment" asp-area="App" asp-route-commentId="@Model.Id">
+
+            <hr />
+
+            <h3> @Model.AuthorName </h3>
+
+
+            <hr />
+
+            <div class="form-group">
+                <label asp-for="Content" class="font-weight-bold"> 댓글: </label>
+                <h5 class="font-italic font-weight-bold"> @Model.Content </h5>
+                <span asp-validation-for="Content" class="text-danger" hidden></span>
+            </div>
+
+            <hr />
+
+            <div class="text-center font-weight-bold"> 이 댓글을 삭제 하시겠습니까?! </div>
+
+            <br />
+            <div>
+                <button type="submit" asp-action="Delete" asp-controller="Comment" asp-route-commentId="@Model.Id"
+                        class="btn btn-success">
+                    삭제
+                </button>
+
+                <a class="btn btn-info" asp-action="Index" onClick="history.go(-1); return false;">
+                    취소
+                </a>
+            </div>
+
+
+        </form>
+
+
+    </div>
+</div>
