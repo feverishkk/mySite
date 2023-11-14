@@ -46,31 +46,8 @@ namespace mySite.Areas.App.Controllers
 
         public IActionResult Index()
         {
-            // 최근 게시물 3개 메인 화면에
             var model = BuildPostIndexModel();
             return View(model);
-            //var postsListing = _postService.GetAll()
-            //                   .Select(post => new PostListingModel
-            //                   {
-            //                       Id = post.Id,
-            //                       Title = post.Title,
-            //                       AuthorId = post.User.Id,
-            //                       AuthorName = post.User.NickName,
-            //                       CommentCount = post.Comments.Count(),
-            //                       DatePosted = post.Created.ToString(),
-            //                       PostContent = post.Content,
-            //                       viewCount = post.ViewCount,
-            //                   })
-            //                   .OrderByDescending(post=>post.DatePosted);
-
-
-            //var model = new PostMainPageModel
-            //{
-            //    PostListingModels = postsListing,
-            //};
-
-
-            //return View(model);
         }
 
         private PostMainPageModel BuildPostIndexModel()
@@ -176,54 +153,6 @@ namespace mySite.Areas.App.Controllers
             };
         }
 
-        //public IActionResult Detail(int postId, int commentId)
-        //{
-        //    var post = _postService.GetById(postId);
-        //    var getPostComment = _commentService.GetById(commentId);
-
-        //    if (post == null)
-        //    {
-        //        TempData[SD.Failed] = "찾을 수 없습니다. 다시 확인해주세요.";
-        //        return NotFound();
-        //    }
-
-        //    // 조회수 증가 기능
-        //    // await _postService.ViewCount(postId);
-
-        //    // 글의 달려 있는 댓글들을 불러온다.
-        //    var comments = BuildPostComments(post);
-
-        //    var postIndex = new PostIndexModel
-        //    {
-        //        Id = post.Id,
-        //        Title = post.Title,
-        //        AuthorId = post.User.Id,
-        //        AuthorName = post.User.NickName,
-        //        AuthorImageUrl = post.User.ProfileImageUrl,
-        //        PostContent = post.Content,
-        //        Comments = comments,
-        //        CommentCount = post.Comments.Count(),
-        //        Created = post.Created,
-        //        IsAuthorAdmin = IsAuthorAdmin(post.User),
-        //    };
-
-        //    var postComment = new PostCommentModel
-        //    {
-        //        Id = getPostComment.Id,
-        //        AuthorId = getPostComment.User.Id,
-        //        AuthorName = getPostComment.User.NickName,
-        //        IsAuthorAdmin = IsAuthorAdmin(getPostComment.User),
-        //        CommentContent = getPostComment.Content,
-        //    };
-
-        //    var model = new PostDetailModel
-        //    {
-        //        PostIndexModels = postIndex,
-        //        PostCommentModels = postComment,
-        //    };
-
-        //    return View(model);
-        //}
 
         public IActionResult Detail(int postId)
         {
@@ -402,58 +331,6 @@ namespace mySite.Areas.App.Controllers
             return RedirectToAction(nameof(Index), nameof(Post), new { id = post.Id });
         }
 
-
-
-        // 잠깐 보류 //
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> UploadPostImage(IFormFile file)
-        //{
-        //    var userId = _userManager.GetUserId(User);
-        //    var userName = _userManager.FindByNameAsync(userId).Result;
-
-        //    string webRootPath = _hostEenvironment.WebRootPath;
-        //    var files = HttpContext.Request.Form.Files;
-
-        //    // 이미지가 없다면..
-        //    if (file == null)
-        //    {
-        //        var uploads = Path.Combine(webRootPath, @"images\" + SD.DefaultImage);
-        //        System.IO.File.Copy(uploads, webRootPath + @"\images" + DateTime.Now.ToString() + userName.Id + ".png");
-
-        //        return RedirectToAction(nameof(Detail), nameof(Post), new { postId = userId });
-        //    }
-
-        //    // 업로드할 이미지가 있다면..
-        //    else
-        //    {
-        //        // Connect to an Azure Storage Account Container
-        //        var connectionString = _configuration.GetConnectionString("AzureStorageAccount");
-
-        //        // Get Blob Container
-        //        var container = _uploadService.GetBlobContainer(connectionString, "free-images");
-
-        //        // Parse the Content Disposition response header
-        //        var contentDisposition = ContentDispositionHeaderValue.Parse(file.ContentDisposition);
-
-        //        // Grab the filename
-        //        var filename = contentDisposition.FileName.Trim('"');
-
-        //        // Get a reference to a Block Blob
-        //        var blockBlob = container.GetBlockBlobReference(filename);
-
-        //        // On that block blob, Upload our file <-- file uploaded to the cloud
-        //        await blockBlob.UploadFromStreamAsync(file.OpenReadStream());
-
-        //        // Set the User's proifle image to the URI
-        //        await _userService.SetProfileImage(userId, blockBlob.Uri);
-
-        //        TempData[SD.Success] = "업로드에 성공하였습니다.";
-        //        // Redirect to the user's profile page
-        //        return RedirectToAction(nameof(Detail), new { postId = userId });
-        //    }
-        //}
     }
 }
 

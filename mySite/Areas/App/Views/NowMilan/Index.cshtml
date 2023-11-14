@@ -667,59 +667,6 @@
 
 </div>
 
-
-
-
-
 <br />
-
-
-
-
-
-
-
-
-
-@*<div class="row ">
-
-        <div class="card m-1" style="width:700px;">
-            <div class="card-body text-center">
-                <table class="table">
-
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Teams</th>
-                            <th>Matches</th>
-                            <th>Wins</th>
-                            <th>Draws</th>
-                            <th>Losses</th>
-                            <th>Goals</th>
-                            <th>PTS</th>
-                        </tr>
-                    </thead>
-
-                    @foreach (var item in Model.leagueStanding.Result.LeagueStanding.Total)
-                    {
-                        <tbody>
-                            <tr class="table-success">
-                                <th scope="row"> @Html.DisplayFor(modelItem => item.StandingPlace)</th>
-                                <td>@Html.DisplayFor(modelItem => item.StandingTeam)</td>
-                                <td>@Html.DisplayFor(modelItem => item.StandingP)</td>
-                                <td>@Html.DisplayFor(modelItem => item.StandingW)</td>
-                                <td>@Html.DisplayFor(modelItem => item.StandingD)</td>
-                                <td>@Html.DisplayFor(modelItem => item.StandingL)</td>
-                                <td>@Html.DisplayFor(modelItem => item.StandingF) | @Html.DisplayFor(modelItem => item.StandingA)</td>
-                                <td>@Html.DisplayFor(modelItem => item.StandingPTS)</td>
-                            </tr>
-                        </tbody>
-                    }
-                </table>
-
-            </div>
-        </div>
-
-    </div>*@
 
 <hr />
